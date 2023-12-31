@@ -37,6 +37,11 @@ class Board: UIViewController {
     private var timeRemaining: TimeInterval = 80
     static var timer: Timer?
     
+    private var oppWordsFound: [String]?
+    private var gameId: String
+    private var boardString: String
+    private var delegate: MessagesViewControllerDelegate!
+    
     let scoring: [Int: Int] = [
         3: 100,
         4: 400,
@@ -58,6 +63,19 @@ class Board: UIViewController {
         setupTop()
     }
     
+    init(gameId: String, board: String, delegate: MessagesViewControllerDelegate, oppWordsFound: [String]? = nil) {
+        self.gameId = gameId
+        self.oppWordsFound = oppWordsFound
+        boardString = board
+        self.delegate = delegate
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     static func clear() {
         timer?.invalidate()
         board = []
@@ -66,6 +84,7 @@ class Board: UIViewController {
         selectedWord = ""
         score = 0
         wordCount = 0
+        scoreLabel.countFromCurrentValue(to: 0, withDuration: 0)
     }
     
     func setupTop() {
@@ -230,14 +249,12 @@ class Board: UIViewController {
     }
     
     private func setupBoard() {
-        let possibleTiles = (97...122).map({String(UnicodeScalar($0))})
-        
         for i in 0...(Board.size - 1) {
             Board.board.append([])
             for j in 0...(Board.size - 1) {
-                let rand = possibleTiles[Int.random(in: 0...25)]
-                Board.board[i].append(LetterImage(image: UIImageView(), letter: rand))
-                Board.board[i][j].image.image = UIImage(named: rand)
+                let letter = boardString[i * Board.size + j]
+                Board.board[i].append(LetterImage(image: UIImageView(), letter: letter))
+                Board.board[i][j].image.image = UIImage(named: letter)
                 Board.board[i][j].image.layer.cornerRadius = 12
                 Board.board[i][j].image.layer.masksToBounds = true
                 

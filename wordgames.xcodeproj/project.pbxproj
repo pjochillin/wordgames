@@ -14,10 +14,12 @@
 		0486BB082B3A29210029A393 /* wordgames MessagesExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0486BB072B3A29210029A393 /* wordgames MessagesExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0486BB0D2B3A29210029A393 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0486BB0C2B3A29210029A393 /* Messages.framework */; };
 		0486BB102B3A29210029A393 /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0486BB0F2B3A29210029A393 /* MessagesViewController.swift */; };
-		0486BB132B3A29210029A393 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0486BB112B3A29210029A393 /* MainInterface.storyboard */; };
 		0486BB152B3A29220029A393 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0486BB142B3A29220029A393 /* Assets.xcassets */; };
 		04D81E372B4147A7006FBE34 /* WordText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E362B4147A7006FBE34 /* WordText.swift */; };
 		04D81E392B414B13006FBE34 /* words_alpha.txt in Resources */ = {isa = PBXBuildFile; fileRef = 04D81E382B414B13006FBE34 /* words_alpha.txt */; };
+		04D81E3B2B415222006FBE34 /* SendBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E3A2B415222006FBE34 /* SendBoard.swift */; };
+		04D81E412B4155A4006FBE34 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04D81E3F2B4155A4006FBE34 /* MainInterface.storyboard */; };
+		04D81E442B415C8A006FBE34 /* WordGames+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E432B415C8A006FBE34 /* WordGames+String.swift */; };
 		5230D7AA71246EC0BE8B44F5 /* Pods_wordgames.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF8FD9F9DA46EFCCCF73DD9 /* Pods_wordgames.framework */; };
 		CDD9DE8000BCEB3CAFAD019F /* Pods_wordgames_MessagesExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9E2C006A17B2422F7A8D5E3 /* Pods_wordgames_MessagesExtension.framework */; };
 /* End PBXBuildFile section */
@@ -56,11 +58,13 @@
 		0486BB072B3A29210029A393 /* wordgames MessagesExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "wordgames MessagesExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0486BB0C2B3A29210029A393 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		0486BB0F2B3A29210029A393 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
-		0486BB122B3A29210029A393 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		0486BB142B3A29220029A393 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0486BB162B3A29220029A393 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		04D81E362B4147A7006FBE34 /* WordText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordText.swift; sourceTree = "<group>"; };
 		04D81E382B414B13006FBE34 /* words_alpha.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = words_alpha.txt; sourceTree = "<group>"; };
+		04D81E3A2B415222006FBE34 /* SendBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBoard.swift; sourceTree = "<group>"; };
+		04D81E402B4155A4006FBE34 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		04D81E432B415C8A006FBE34 /* WordGames+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordGames+String.swift"; sourceTree = "<group>"; };
 		69DBDA8C9AB076D299B443D2 /* Pods-wordgames MessagesExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wordgames MessagesExtension.debug.xcconfig"; path = "Target Support Files/Pods-wordgames MessagesExtension/Pods-wordgames MessagesExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		79377E999E281AC761304F17 /* Pods-wordgames.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wordgames.debug.xcconfig"; path = "Target Support Files/Pods-wordgames/Pods-wordgames.debug.xcconfig"; sourceTree = "<group>"; };
 		8E2F8DBB73A80A0F172058F5 /* Pods-wordgames MessagesExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wordgames MessagesExtension.release.xcconfig"; path = "Target Support Files/Pods-wordgames MessagesExtension/Pods-wordgames MessagesExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -104,6 +108,7 @@
 			children = (
 				0486BB0F2B3A29210029A393 /* MessagesViewController.swift */,
 				040C0A602B4146D000FB1290 /* Board.swift */,
+				04D81E3A2B415222006FBE34 /* SendBoard.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -151,11 +156,12 @@
 		0486BB0E2B3A29210029A393 /* wordgames MessagesExtension */ = {
 			isa = PBXGroup;
 			children = (
-				04D81E352B414789006FBE34 /* Views */,
+				04D81E422B415C7A006FBE34 /* Extensions */,
 				040C0A5F2B41467500FB1290 /* Controllers */,
-				0486BB112B3A29210029A393 /* MainInterface.storyboard */,
+				04D81E352B414789006FBE34 /* Views */,
 				0486BB142B3A29220029A393 /* Assets.xcassets */,
 				0486BB162B3A29220029A393 /* Info.plist */,
+				04D81E3F2B4155A4006FBE34 /* MainInterface.storyboard */,
 				04D81E382B414B13006FBE34 /* words_alpha.txt */,
 			);
 			path = "wordgames MessagesExtension";
@@ -167,6 +173,14 @@
 				04D81E362B4147A7006FBE34 /* WordText.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		04D81E422B415C7A006FBE34 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				04D81E432B415C8A006FBE34 /* WordGames+String.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		14801A7A6252A924EBAB9A4C /* Pods */ = {
@@ -272,9 +286,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				04D81E392B414B13006FBE34 /* words_alpha.txt in Resources */,
+				04D81E412B4155A4006FBE34 /* MainInterface.storyboard in Resources */,
 				0486BB152B3A29220029A393 /* Assets.xcassets in Resources */,
 				040C0A5B2B41456300FB1290 /* Rubik-Bold.ttf in Resources */,
-				0486BB132B3A29210029A393 /* MainInterface.storyboard in Resources */,
 				040C0A5D2B41456900FB1290 /* Rubik-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,6 +364,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04D81E3B2B415222006FBE34 /* SendBoard.swift in Sources */,
+				04D81E442B415C8A006FBE34 /* WordGames+String.swift in Sources */,
 				040C0A612B4146D000FB1290 /* Board.swift in Sources */,
 				04D81E372B4147A7006FBE34 /* WordText.swift in Sources */,
 				0486BB102B3A29210029A393 /* MessagesViewController.swift in Sources */,
@@ -367,10 +383,10 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		0486BB112B3A29210029A393 /* MainInterface.storyboard */ = {
+		04D81E3F2B4155A4006FBE34 /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				0486BB122B3A29210029A393 /* Base */,
+				04D81E402B4155A4006FBE34 /* Base */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";

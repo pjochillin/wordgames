@@ -15,7 +15,6 @@ class MessagesViewController: MSMessagesAppViewController {
     private var board: Board?
     private var boardId: String?
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -38,6 +37,8 @@ class MessagesViewController: MSMessagesAppViewController {
         // Use this method to release shared resources, save user data, invalidate timers,
         // and store enough state information to restore your extension to its current state
         // in case it is terminated later.
+        
+        Board.clear()
     }
    
     override func didReceive(_ message: MSMessage, conversation: MSConversation) {
@@ -75,21 +76,74 @@ class MessagesViewController: MSMessagesAppViewController {
             child.removeFromParent()
         }
         
-        if presentationStyle == .expanded {
-            let controller = Board()
-            controller.willMove(toParent: self)
-            addChild(controller)
-            controller.view.frame = view.bounds
-            controller.view.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(controller.view)
-                    
-            controller.view.snp.makeConstraints { im in
-                im.top.bottom.leading.trailing.equalToSuperview()
+        var controller: UIViewController
+        if self.activeConversation?.selectedMessage?.url?.query() != nil && presentationStyle == .expanded {
+            let query = parseQuery(self.activeConversation!.selectedMessage!.url!.query()!)
+            if board == nil && boardId == nil {
+                board = Board(gameId: query["gameId"]!, board: query["board"]!, delegate: self)
+                boardId = query["gameId"]!
             }
-            
-            controller.didMove(toParent: self)
+            controller = board!
+        } else {
+            controller = SendBoard(delegate: self)
+        }
+        controller.willMove(toParent: self)
+        addChild(controller)
+        controller.view.frame = view.bounds
+        controller.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(controller.view)
+                
+        controller.view.snp.makeConstraints { im in
+            im.top.bottom.leading.trailing.equalToSuperview()
         }
         
+        controller.didMove(toParent: self)
     }
+    
+    func parseQuery(_ query: String) -> [String: String] {
+        var dict: [String: String] = [:]
+        for pair in query.components(separatedBy: "&") {
+            let innerList = pair.components(separatedBy: "=")
+            dict[innerList[0]] = innerList[1]
+        }
+        return dict
+    }
+}
 
+protocol MessagesViewControllerDelegate {
+    func sendBoard()
+    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?)
+}
+
+extension MessagesViewController: MessagesViewControllerDelegate {
+    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?) {
+        
+    }
+    
+    func sendBoard() {
+        let message = MSMessage(session: MSSession())
+        let components = NSURLComponents()
+        
+        var board = ""
+        
+        for _ in 0...15 {
+            board += SendBoard.generateLetter()
+        }
+        
+        components.queryItems = [
+            URLQueryItem(name: "board", value: board),
+            URLQueryItem(name: "gameId", value: UUID().uuidString),
+            URLQueryItem(name: "initUserId", value: activeConversation!.localParticipantIdentifier.uuidString)
+        ]
+        message.url = components.url!
+        
+        let layout = MSMessageTemplateLayout()
+        layout.image = UIImage(named: "question-board")
+        layout.caption = "Word Hunt"
+        layout.subcaption = "Let's play Word Hunt!"
+        
+        message.layout = layout
+        
+        self.activeConversation!.insert(message)
+    }
 }
