@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040C0A5B2B41456300FB1290 /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 040C0A5A2B41456300FB1290 /* Rubik-Bold.ttf */; };
+		040C0A5D2B41456900FB1290 /* Rubik-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 040C0A5C2B41456900FB1290 /* Rubik-VariableFont_wght.ttf */; };
 		0486BB022B3A29210029A393 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0486BB012B3A29210029A393 /* Assets.xcassets */; };
 		0486BB082B3A29210029A393 /* wordgames MessagesExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0486BB072B3A29210029A393 /* wordgames MessagesExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0486BB0D2B3A29210029A393 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0486BB0C2B3A29210029A393 /* Messages.framework */; };
@@ -40,6 +42,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		040C0A5A2B41456300FB1290 /* Rubik-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Bold.ttf"; sourceTree = "<group>"; };
+		040C0A5C2B41456900FB1290 /* Rubik-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		040C0A5E2B41457F00FB1290 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0486BAFE2B3A29200029A393 /* wordgames.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wordgames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0486BB012B3A29210029A393 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0486BB072B3A29210029A393 /* wordgames MessagesExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "wordgames MessagesExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,6 +67,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		040C0A592B41455900FB1290 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				040C0A5A2B41456300FB1290 /* Rubik-Bold.ttf */,
+				040C0A5C2B41456900FB1290 /* Rubik-VariableFont_wght.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		0486BAF72B3A29200029A393 = {
 			isa = PBXGroup;
 			children = (
@@ -84,6 +98,8 @@
 		0486BB002B3A29200029A393 /* wordgames */ = {
 			isa = PBXGroup;
 			children = (
+				040C0A5E2B41457F00FB1290 /* Info.plist */,
+				040C0A592B41455900FB1290 /* Fonts */,
 				0486BB012B3A29210029A393 /* Assets.xcassets */,
 			);
 			path = wordgames;
@@ -196,7 +212,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0486BB152B3A29220029A393 /* Assets.xcassets in Resources */,
+				040C0A5B2B41456300FB1290 /* Rubik-Bold.ttf in Resources */,
 				0486BB132B3A29210029A393 /* MainInterface.storyboard in Resources */,
+				040C0A5D2B41456900FB1290 /* Rubik-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +431,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 98JYHMUJJY;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = wordgames/Info.plist;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -434,6 +453,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 98JYHMUJJY;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = wordgames/Info.plist;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
