@@ -33,6 +33,10 @@ class Board: UIViewController {
     static let wordCountLabel = UILabel()
     static let wordCountText = UILabel()
     
+    private let timerLabel = UILabel()
+    private var timeRemaining: TimeInterval = 80
+    static var timer: Timer?
+    
     let scoring: [Int: Int] = [
         3: 100,
         4: 400,
@@ -46,12 +50,22 @@ class Board: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupTimer()
+        setupBorder()
         setupBoard()
         setupCanvas()
         setupDict()
         setupWordText()
         setupTop()
+    }
+    
+    static func clear() {
+        timer?.invalidate()
+        board = []
+        lineLayer = nil
+        foundWords = []
+        selectedWord = ""
+        score = 0
+        wordCount = 0
     }
     
     func setupTop() {
@@ -113,6 +127,31 @@ class Board: UIViewController {
             im.top.equalToSuperview().offset(view.frame.width / 12 + 24)
         }
     
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.second, .minute]
+        formatter.zeroFormattingBehavior = .pad
+        
+        timerLabel.text = formatter.string(from: timeRemaining)!
+        timerLabel.textColor = textColor
+        timerLabel.font = UIFont(name: "Rubik", size: 28)
+        
+        view.addSubview(timerLabel)
+        timerLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        timerLabel.snp.makeConstraints { im in
+            im.centerX.equalToSuperview()
+            im.top.equalToSuperview().offset(view.frame.width / 12 + 12)
+        }
+        
+        Board.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            self.timeRemaining -= 1
+            self.timerLabel.text = formatter.string(from: self.timeRemaining)!
+            if self.timeRemaining < 0 {
+                timer.invalidate()
+                // TODO: end game
+            }
+        }
+        
         let line = CAShapeLayer()
         if traitCollection.userInterfaceStyle == .light {
             line.strokeColor = UIColor.darkTheme.cgColor.copy(alpha: 0.5)
@@ -135,7 +174,7 @@ class Board: UIViewController {
         line.path = path.cgPath
     }
     
-    func setupTimer() {
+    func setupBorder() {
         let xOffset: CGFloat = CGFloat((6 * (Board.size + 1)))
         let halfSize: CGFloat = CGFloat(Board.size / 2)
         let defaultOffset: CGFloat = (view.frame.width - xOffset) / halfSize * -1
@@ -164,7 +203,7 @@ class Board: UIViewController {
         Board.currentWordLabel.layer.cornerRadius = 4
         Board.currentWordLabel.layer.masksToBounds = true
         Board.currentWordLabel.isUserInteractionEnabled = false
-        Board.currentWordLabel.isHidden = true
+        Board.currentWordLabel.alpha = 0
         
         view.addSubview(Board.currentWordLabel)
         Board.currentWordLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -234,8 +273,6 @@ class Board: UIViewController {
         let halfSize: CGFloat = CGFloat(Board.size / 2)
         let defaultOffset: CGFloat = (view.frame.width - xOffset) / halfSize * -1
         canvas = Canvas(frame: Board.rect)
-//        canvas.layer.borderWidth = 2
-//        canvas.layer.borderColor = UIColor.blue.cgColor
         panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(drag(_:)))
         panRecognizer.minimumNumberOfTouches = 1
         panRecognizer.maximumNumberOfTouches = 1
@@ -256,7 +293,6 @@ class Board: UIViewController {
         Board.lineLayer.strokeColor = UIColor.red.cgColor.copy(alpha: 0.8)
         Board.lineLayer.lineCap = .round
         Board.lineLayer.lineJoin = .round
-//        Board.lineLayer.strokeColor = UIColor.green.cgColor
         Board.lineLayer.fillColor = UIColor.clear.cgColor
         Board.lineLayer.lineWidth = 15
         canvas.layer.addSublayer(Board.lineLayer)
@@ -290,10 +326,13 @@ class Board: UIViewController {
             let multiplier: CGFloat = (view.frame.width - xOffset) / CGFloat(Board.size)
             let topOffset: CGFloat = defaultOffset + multiplier * CGFloat(col)
             let leadingOffset: CGFloat = defaultOffset + multiplier * CGFloat(row)
-            letterObj.image.snp.updateConstraints { im in
-                im.top.equalTo(view.safeAreaLayoutGuide.snp.centerY).offset(topOffset - 2)
-                im.leading.equalTo(view.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 1)
-                im.size.equalTo(multiplier - 2)
+            UIView.animate(withDuration: 0.2, delay: 0) {
+                letterObj.image.snp.updateConstraints { im in
+                    im.top.equalTo(self.view.safeAreaLayoutGuide.snp.centerY).offset(topOffset - 2)
+                    im.leading.equalTo(self.view.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 1)
+                    im.size.equalTo(multiplier - 2)
+                }
+                self.view.layoutIfNeeded()
             }
             if Board.foundWords.contains(Board.selectedWord.lowercased()) {
                 Board.lineLayer.strokeColor = UIColor.white.cgColor.copy(alpha: 0.8)
@@ -330,10 +369,13 @@ class Board: UIViewController {
                 letterObj.image.image = UIImage(named: letterObj.letter)
                 let topOffset: CGFloat = defaultOffset + multiplier * CGFloat(square.y)
                 let leadingOffset: CGFloat = defaultOffset + multiplier * CGFloat(square.x)
-                letterObj.image.snp.updateConstraints { im in
-                    im.top.equalTo(view.safeAreaLayoutGuide.snp.centerY).offset(topOffset)
-                    im.leading.equalTo(view.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 3)
-                    im.size.equalTo(multiplier - 6)
+                UIView.animate(withDuration: 0.2, delay: 0) {
+                    letterObj.image.snp.updateConstraints { im in
+                        im.top.equalTo(self.view.safeAreaLayoutGuide.snp.centerY).offset(topOffset)
+                        im.leading.equalTo(self.view.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 3)
+                        im.size.equalTo(multiplier - 6)
+                    }
+                    self.view.layoutIfNeeded()
                 }
             }
             
@@ -346,8 +388,10 @@ class Board: UIViewController {
             }
             
             Board.draggedTiles = []
-            Board.currentWordLabel.text = ""
-            Board.currentWordLabel.isHidden = true
+            UIView.animate(withDuration: 0.2, delay: 0) {
+                Board.currentWordLabel.alpha = 0
+                self.view.layoutIfNeeded()
+            }
             Board.selectedWord = ""
         }
     }
@@ -382,7 +426,7 @@ class Canvas: UIView {
         let letterObj = Board.board[Int(col)][Int(row)]
         Board.selectedWord = letterObj.letter.uppercased()
         Board.currentWordLabel.text = Board.selectedWord
-        Board.currentWordLabel.isHidden = false
+        Board.currentWordLabel.alpha = 1
         Board.currentWordLabel.backgroundColor = UIColor.darkTheme
         letterObj.image.image = UIImage(named: "\(letterObj.letter)-white")
         let xOffset: CGFloat = CGFloat((6 * (Board.size + 1)))
@@ -391,10 +435,14 @@ class Canvas: UIView {
         let multiplier: CGFloat = (superview!.frame.width - xOffset) / CGFloat(Board.size)
         let topOffset: CGFloat = defaultOffset + multiplier * CGFloat(col)
         let leadingOffset: CGFloat = defaultOffset + multiplier * CGFloat(row)
-        letterObj.image.snp.updateConstraints { im in
-            im.top.equalTo(superview!.safeAreaLayoutGuide.snp.centerY).offset(topOffset - 2)
-            im.leading.equalTo(superview!.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 1)
-            im.size.equalTo(multiplier - 2)
+        
+        UIView.animate(withDuration: 0.2, delay: 0) {
+            letterObj.image.snp.updateConstraints { im in
+                im.top.equalTo(self.superview!.safeAreaLayoutGuide.snp.centerY).offset(topOffset - 2)
+                im.leading.equalTo(self.superview!.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 1)
+                im.size.equalTo(multiplier - 2)
+            }
+            self.superview!.layoutIfNeeded()
         }
     }
     
@@ -409,15 +457,21 @@ class Canvas: UIView {
             letterObj.image.image = UIImage(named: letterObj.letter)
             let topOffset: CGFloat = defaultOffset + multiplier * CGFloat(square.y)
             let leadingOffset: CGFloat = defaultOffset + multiplier * CGFloat(square.x)
-            letterObj.image.snp.updateConstraints { im in
-                im.top.equalTo(superview!.safeAreaLayoutGuide.snp.centerY).offset(topOffset)
-                im.leading.equalTo(superview!.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 3)
-                im.size.equalTo(multiplier - 6)
+            UIView.animate(withDuration: 0.2, delay: 0) {
+                letterObj.image.snp.updateConstraints { im in
+                    im.top.equalTo(self.superview!.safeAreaLayoutGuide.snp.centerY).offset(topOffset)
+                    im.leading.equalTo(self.superview!.safeAreaLayoutGuide.snp.centerX).offset(leadingOffset + 3)
+                    im.size.equalTo(multiplier - 6)
+                }
+                self.superview!.layoutIfNeeded()
             }
         }
         Board.draggedTiles = []
-        Board.currentWordLabel.text = ""
-        Board.currentWordLabel.isHidden = true
+        UIView.animate(withDuration: 0.2, delay: 0) {
+            Board.currentWordLabel.alpha = 0
+            self.superview!.layoutIfNeeded()
+        }
+        Board.selectedWord = ""
     }
 }
 

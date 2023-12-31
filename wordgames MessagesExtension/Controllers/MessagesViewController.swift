@@ -8,6 +8,8 @@
 import UIKit
 import Messages
 
+// TODO: allow dynamic sizing, set max game size
+
 class MessagesViewController: MSMessagesAppViewController {
     
     private var board: Board?
