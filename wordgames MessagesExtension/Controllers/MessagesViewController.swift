@@ -9,6 +9,8 @@ import UIKit
 import Messages
 
 // TODO: allow dynamic sizing, set max game size
+// TODO: send message on game end with proper URL
+// TODO: modify layouts on received based on status of game
 
 class MessagesViewController: MSMessagesAppViewController {
     
@@ -89,9 +91,9 @@ class MessagesViewController: MSMessagesAppViewController {
         }
         
         // Test code just for viewing EndGame VC
-        if presentationStyle == .expanded {
-            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["yeet", "troll", "testing"])
-        }
+//        if presentationStyle == .expanded {
+//            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["yeet", "troll", "testing"])
+//        }
         
         controller.willMove(toParent: self)
         addChild(controller)
@@ -123,7 +125,30 @@ protocol MessagesViewControllerDelegate {
 
 extension MessagesViewController: MessagesViewControllerDelegate {
     func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?) {
+        let newController = EndGame(gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+        newController.view.transform = CGAffineTransform(translationX: view.frame.width, y: 0)
+        newController.willMove(toParent: self)
+        addChild(newController)
+        newController.view.frame = view.bounds
+        newController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(newController.view)
+                
+        newController.view.snp.makeConstraints { im in
+            im.top.bottom.leading.trailing.equalToSuperview()
+        }
         
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveLinear) {
+            newController.view.transform = .identity
+        }
+        newController.didMove(toParent: self)
+        
+        for child in children {
+            if child != newController {
+                child.willMove(toParent: nil)
+                child.view.removeFromSuperview()
+                child.removeFromParent()
+            }
+        }
     }
     
     func sendBoard() {

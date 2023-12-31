@@ -25,6 +25,9 @@ class EndGame: UIViewController {
     private let oppWordsLabel = UILabel()
     private var oppCollectionView: UICollectionView!
     
+    private let waitingBackground = UIView()
+    private let waitingLabel = WordText()
+    
     let gameId: String
     let youWordsFound: [String]
     var youScore = 0
@@ -35,9 +38,12 @@ class EndGame: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .systemBackground
+        
         setupCollectionViews()
         setupYouInfoBox()
         setupOppInfoBox()
+        animateWait()
     }
     
     init(gameId: String, wordsFound: [String], oppWordsFound: [String]? = nil) {
@@ -232,8 +238,8 @@ class EndGame: UIViewController {
     private func setupCollectionViews() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 4
-        layout.minimumInteritemSpacing = 4
+        layout.minimumLineSpacing = 2
+        layout.minimumInteritemSpacing = 2
         
         youCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         youCollectionView.register(WordCollectionViewCell.self, forCellWithReuseIdentifier: WordCollectionViewCell.reuse)
@@ -255,8 +261,8 @@ class EndGame: UIViewController {
         
         let layoutOpp = UICollectionViewFlowLayout()
         layoutOpp.scrollDirection = .vertical
-        layoutOpp.minimumLineSpacing = 4
-        layoutOpp.minimumInteritemSpacing = 4
+        layoutOpp.minimumLineSpacing = 2
+        layoutOpp.minimumInteritemSpacing = 2
         
         oppCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layoutOpp)
         oppCollectionView.register(WordCollectionViewCell.self, forCellWithReuseIdentifier: WordCollectionViewCell.reuse)
@@ -274,6 +280,65 @@ class EndGame: UIViewController {
             im.centerY.equalToSuperview()
             im.height.equalTo(view.frame.height / 3)
             im.width.equalTo(min(view.frame.width / 2 - 40, 150))
+        }
+    }
+    
+    func animateWait() {
+        view.addSubview(waitingBackground)
+        waitingBackground.translatesAutoresizingMaskIntoConstraints = false
+        waitingBackground.snp.makeConstraints { im in
+            im.top.bottom.leading.trailing.equalToSuperview()
+        }
+        
+        waitingLabel.text = "SENT"
+        waitingLabel.textColor = .whiteTheme
+        waitingLabel.font = UIFont(name: "Rubik", size: 18)
+        waitingLabel.backgroundColor = .darkTheme
+        
+        view.addSubview(waitingLabel)
+        waitingLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        waitingLabel.snp.makeConstraints { im in
+            im.centerX.equalToSuperview()
+            im.bottom.equalTo(view.snp.top)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            if !self.waitingBackground.isHidden {
+                UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
+                    self.waitingBackground.backgroundColor = .darkTheme.withAlphaComponent(0.5)
+                }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if !self.waitingBackground.isHidden {
+                UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut) {
+                    self.waitingLabel.snp.remakeConstraints { im in
+                        im.bottom.equalToSuperview().inset(50)
+                        im.centerX.equalToSuperview()
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if !self.waitingBackground.isHidden {
+                UIView.animate(withDuration: 0.2, delay: 0, options: .transitionCrossDissolve) {
+                    self.waitingLabel.text = "Waiting for opponent"
+                    self.view.layoutIfNeeded()
+                }
+                Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { timer in
+                    if self.waitingLabel.text!.filter({ $0 == "." }).count == 3 {
+                        self.waitingLabel.text = "Waiting for opponent"
+                    } else {
+                        self.waitingLabel.text! += "."
+                    }
+                    
+                    if self.waitingBackground.isHidden {
+                        timer.invalidate()
+                    }
+                }
+            }
         }
     }
 }

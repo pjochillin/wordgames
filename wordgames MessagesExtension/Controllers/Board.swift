@@ -34,7 +34,7 @@ class Board: UIViewController {
     static let wordCountText = UILabel()
     
     private let timerLabel = UILabel()
-    private var timeRemaining: TimeInterval = 80
+    private var timeRemaining: TimeInterval = 10
     static var timer: Timer?
     
     private var oppWordsFound: [String]?
@@ -167,7 +167,7 @@ class Board: UIViewController {
             self.timerLabel.text = formatter.string(from: self.timeRemaining)!
             if self.timeRemaining < 0 {
                 timer.invalidate()
-                // TODO: end game
+                self.delegate.endGame(gameId: self.gameId, wordsFound: Board.foundWords, oppWordsFound: self.oppWordsFound)
             }
         }
         
