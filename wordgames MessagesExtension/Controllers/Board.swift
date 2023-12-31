@@ -42,7 +42,7 @@ class Board: UIViewController {
     private var boardString: String
     private var delegate: MessagesViewControllerDelegate!
     
-    let scoring: [Int: Int] = [
+    static let scoring: [Int: Int] = [
         3: 100,
         4: 400,
         5: 800,
@@ -84,7 +84,7 @@ class Board: UIViewController {
         selectedWord = ""
         score = 0
         wordCount = 0
-        scoreLabel.countFromCurrentValue(to: 0, withDuration: 0)
+        scoreLabel.text = "0000"
     }
     
     func setupTop() {
@@ -359,7 +359,7 @@ class Board: UIViewController {
                     letterObj.image.image = UIImage(named: "\(letterObj.letter)-orange")
                 }
             } else if words.contains(Board.selectedWord.lowercased()) {
-                Board.currentWordLabel.text! += " (+\(scoring[Board.selectedWord.count] ?? 3000))"
+                Board.currentWordLabel.text! += " (+\(Board.scoring[Board.selectedWord.count] ?? 3000))"
                 Board.lineLayer.strokeColor = UIColor.white.cgColor.copy(alpha: 0.8)
                 Board.currentWordLabel.backgroundColor = UIColor.greenTheme
                 for square in Board.draggedTiles {
@@ -397,7 +397,7 @@ class Board: UIViewController {
             }
             
             if words.contains(Board.selectedWord.lowercased()) && !Board.foundWords.contains(Board.selectedWord.lowercased()) {
-                Board.score += scoring[Board.selectedWord.count] ?? 3000
+                Board.score += Board.scoring[Board.selectedWord.count] ?? 3000
                 Board.scoreLabel.countFromCurrentValue(to: CGFloat(Board.score))
                 Board.wordCount += 1
                 Board.wordCountLabel.text = String(Board.wordCount)

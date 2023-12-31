@@ -87,6 +87,12 @@ class MessagesViewController: MSMessagesAppViewController {
         } else {
             controller = SendBoard(delegate: self)
         }
+        
+        // Test code just for viewing EndGame VC
+        if presentationStyle == .expanded {
+            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["yeet", "troll", "testing"])
+        }
+        
         controller.willMove(toParent: self)
         addChild(controller)
         controller.view.frame = view.bounds

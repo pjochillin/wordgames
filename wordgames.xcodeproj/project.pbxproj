@@ -20,6 +20,8 @@
 		04D81E3B2B415222006FBE34 /* SendBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E3A2B415222006FBE34 /* SendBoard.swift */; };
 		04D81E412B4155A4006FBE34 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04D81E3F2B4155A4006FBE34 /* MainInterface.storyboard */; };
 		04D81E442B415C8A006FBE34 /* WordGames+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E432B415C8A006FBE34 /* WordGames+String.swift */; };
+		04D81E462B416252006FBE34 /* EndGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E452B416252006FBE34 /* EndGame.swift */; };
+		04D81E482B416C4C006FBE34 /* WordCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D81E472B416C4C006FBE34 /* WordCollectionViewCell.swift */; };
 		5230D7AA71246EC0BE8B44F5 /* Pods_wordgames.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFF8FD9F9DA46EFCCCF73DD9 /* Pods_wordgames.framework */; };
 		CDD9DE8000BCEB3CAFAD019F /* Pods_wordgames_MessagesExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9E2C006A17B2422F7A8D5E3 /* Pods_wordgames_MessagesExtension.framework */; };
 /* End PBXBuildFile section */
@@ -65,6 +67,8 @@
 		04D81E3A2B415222006FBE34 /* SendBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBoard.swift; sourceTree = "<group>"; };
 		04D81E402B4155A4006FBE34 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		04D81E432B415C8A006FBE34 /* WordGames+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordGames+String.swift"; sourceTree = "<group>"; };
+		04D81E452B416252006FBE34 /* EndGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGame.swift; sourceTree = "<group>"; };
+		04D81E472B416C4C006FBE34 /* WordCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCollectionViewCell.swift; sourceTree = "<group>"; };
 		69DBDA8C9AB076D299B443D2 /* Pods-wordgames MessagesExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wordgames MessagesExtension.debug.xcconfig"; path = "Target Support Files/Pods-wordgames MessagesExtension/Pods-wordgames MessagesExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		79377E999E281AC761304F17 /* Pods-wordgames.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wordgames.debug.xcconfig"; path = "Target Support Files/Pods-wordgames/Pods-wordgames.debug.xcconfig"; sourceTree = "<group>"; };
 		8E2F8DBB73A80A0F172058F5 /* Pods-wordgames MessagesExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wordgames MessagesExtension.release.xcconfig"; path = "Target Support Files/Pods-wordgames MessagesExtension/Pods-wordgames MessagesExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -109,6 +113,7 @@
 				0486BB0F2B3A29210029A393 /* MessagesViewController.swift */,
 				040C0A602B4146D000FB1290 /* Board.swift */,
 				04D81E3A2B415222006FBE34 /* SendBoard.swift */,
+				04D81E452B416252006FBE34 /* EndGame.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -171,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				04D81E362B4147A7006FBE34 /* WordText.swift */,
+				04D81E472B416C4C006FBE34 /* WordCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -365,8 +371,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				04D81E3B2B415222006FBE34 /* SendBoard.swift in Sources */,
+				04D81E482B416C4C006FBE34 /* WordCollectionViewCell.swift in Sources */,
 				04D81E442B415C8A006FBE34 /* WordGames+String.swift in Sources */,
 				040C0A612B4146D000FB1290 /* Board.swift in Sources */,
+				04D81E462B416252006FBE34 /* EndGame.swift in Sources */,
 				04D81E372B4147A7006FBE34 /* WordText.swift in Sources */,
 				0486BB102B3A29210029A393 /* MessagesViewController.swift in Sources */,
 			);
