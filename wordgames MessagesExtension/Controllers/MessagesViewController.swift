@@ -16,6 +16,7 @@ class MessagesViewController: MSMessagesAppViewController {
     
     private var board: Board?
     private var boardId: String?
+    private var endGame: EndGame?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +49,77 @@ class MessagesViewController: MSMessagesAppViewController {
         // extension on a remote device.
         
         // Use this method to trigger UI updates in response to the message.
+        
+        let currentUser = conversation.localParticipantIdentifier.uuidString
+        
+        // Ensure it is from a remote device and has a query to parse
+        if message.senderParticipantIdentifier.uuidString == currentUser || message.url?.query() == nil {
+            return
+        }
+        
+        let query = parseQuery(message.url!.query()!)
+        
+        let layout = MSMessageTemplateLayout()
+        layout.image = UIImage(named: "question-board")
+        layout.caption = "Word Hunt"
+        
+        if query["initUserWords"] != nil && query["otherUserWords"] != nil {
+            if currentUser != query["initUserId"]! && currentUser != query["otherUserId"] {
+                // TODO: user is not in game (already 2 players that played)
+            } else if currentUser == query["initUserId"] {
+                var youScore = 0
+                var oppScore = 0
+                
+                let wordsFound = query["initUserWords"]!.components(separatedBy: "-")
+                let oppWordsFound = query["otherUserWords"]!.components(separatedBy: "-")
+                
+                wordsFound.forEach { word in
+                    youScore += Board.scoring[word.count] ?? 3000
+                }
+                oppWordsFound.forEach { word in
+                    oppScore += Board.scoring[word.count] ?? 3000
+                }
+                if youScore > oppScore {
+                    layout.subcaption = "You won!"
+                } else if youScore < oppScore {
+                    layout.subcaption = "You lost!"
+                } else {
+                    layout.subcaption = "Draw!"
+                }
+            } else {
+                var youScore = 0
+                var oppScore = 0
+                
+                let wordsFound = query["otherUserWords"]!.components(separatedBy: "-")
+                let oppWordsFound = query["initUserWords"]!.components(separatedBy: "-")
+                
+                wordsFound.forEach { word in
+                    youScore += Board.scoring[word.count] ?? 3000
+                }
+                oppWordsFound.forEach { word in
+                    oppScore += Board.scoring[word.count] ?? 3000
+                }
+                if youScore > oppScore {
+                    layout.subcaption = "You won!"
+                } else if youScore < oppScore {
+                    layout.subcaption = "You lost!"
+                } else {
+                    layout.subcaption = "Draw!"
+                }
+            }
+            
+            message.layout = layout
+        } else if (query["initUserId"] == currentUser && query["initUserWords"] == nil) || (query["otherUserId"] == nil && query["initUserWords"] != nil) {
+            layout.subcaption = "Your move"
+            message.layout = layout
+        }
+        // This means that the message is the blank message to start a game.
+        
+        // Update game end screen if necessary.
+        if children.count > 0 && endGame != nil && children.contains(endGame!) && endGame!.gameId == query["gameId"] {
+            
+        }
+        // Update board variables if necessary
     }
     
     override func didStartSending(_ message: MSMessage, conversation: MSConversation) {
@@ -91,9 +163,9 @@ class MessagesViewController: MSMessagesAppViewController {
         }
         
         // Test code just for viewing EndGame VC
-//        if presentationStyle == .expanded {
-//            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["yeet", "troll", "testing"])
-//        }
+        if presentationStyle == .expanded {
+            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"])
+        }
         
         controller.willMove(toParent: self)
         addChild(controller)
@@ -120,11 +192,11 @@ class MessagesViewController: MSMessagesAppViewController {
 
 protocol MessagesViewControllerDelegate {
     func sendBoard()
-    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?)
+    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?)
 }
 
 extension MessagesViewController: MessagesViewControllerDelegate {
-    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?) {
+    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?) {
         let newController = EndGame(gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
         newController.view.transform = CGAffineTransform(translationX: view.frame.width, y: 0)
         newController.willMove(toParent: self)
@@ -149,6 +221,62 @@ extension MessagesViewController: MessagesViewControllerDelegate {
                 child.removeFromParent()
             }
         }
+        
+        let query = parseQuery(self.activeConversation!.selectedMessage!.url!.query()!)
+        let message = MSMessage(session: self.activeConversation!.selectedMessage!.session!)
+        let components = NSURLComponents()
+        
+        components.queryItems = [
+            URLQueryItem(name: "board", value: query["board"]!),
+            URLQueryItem(name: "gameId", value: gameId),
+            URLQueryItem(name: "initUserId", value: query["initUserId"])
+        ]
+        
+        let currentUserId = activeConversation!.localParticipantIdentifier.uuidString
+        if currentUserId == query["initUserId"] {
+            components.queryItems!.append(URLQueryItem(name: "initUserWords", value: wordsFound.joined(separator: "-")))
+            if oppWordsFound != nil {
+                components.queryItems!.append(URLQueryItem(name: "otherUserWords", value: oppWordsFound!.joined(separator: "-")))
+                components.queryItems!.append(URLQueryItem(name: "otherUserId", value: oppUserId!))
+            }
+        } else if query["otherUserId"] == nil {
+            components.queryItems!.append(URLQueryItem(name: "otherUserWords", value: wordsFound.joined(separator: "-")))
+            components.queryItems!.append(URLQueryItem(name: "otherUserId", value: currentUserId))
+            if oppWordsFound != nil {
+                components.queryItems!.append(URLQueryItem(name: "initUserWords", value: oppWordsFound!.joined(separator: "-")))
+            }
+        } else {
+            // TODO: when there are > 2 players
+        }
+        
+        message.url = components.url!
+        
+        let layout = MSMessageTemplateLayout()
+        layout.image = UIImage(named: "question-board")
+        layout.caption = "Word Hunt"
+        if oppWordsFound == nil {
+            layout.subcaption = "Waiting for opponent"
+        } else {
+            var youScore = 0
+            var oppScore = 0
+            wordsFound.forEach { word in
+                youScore += Board.scoring[word.count] ?? 3000
+            }
+            oppWordsFound!.forEach { word in
+                oppScore += Board.scoring[word.count] ?? 3000
+            }
+            if youScore > oppScore {
+                layout.subcaption = "You won!"
+            } else if youScore < oppScore {
+                layout.subcaption = "You lost!"
+            } else {
+                layout.subcaption = "Draw!"
+            }
+        }
+        
+        message.layout = layout
+        
+        self.activeConversation!.send(message)
     }
     
     func sendBoard() {

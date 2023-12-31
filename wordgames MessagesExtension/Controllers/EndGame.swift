@@ -27,6 +27,7 @@ class EndGame: UIViewController {
     
     private let waitingBackground = UIView()
     private let waitingLabel = WordText()
+    private let resultsLabel = WordText()
     
     let gameId: String
     let youWordsFound: [String]
@@ -43,7 +44,12 @@ class EndGame: UIViewController {
         setupCollectionViews()
         setupYouInfoBox()
         setupOppInfoBox()
-        animateWait()
+        
+        if hasOppInfo {
+            animateResults()
+        } else {
+            animateWait()
+        }
     }
     
     init(gameId: String, wordsFound: [String], oppWordsFound: [String]? = nil) {
@@ -339,6 +345,54 @@ class EndGame: UIViewController {
                     }
                 }
             }
+        }
+    }
+    
+    func updateOpp(oppWordsFound: [String]) {
+        hasOppInfo = true
+        self.oppWordsFound = oppWordsFound.sorted {
+            $0.count > $1.count
+        }
+        self.oppWordsFound.forEach { elem in
+            self.oppScore += Board.scoring[elem.count] ?? 3000
+        }
+        
+        waitingBackground.isHidden = true
+        waitingLabel.isHidden = true
+        
+        oppWordsLabel.text = String(oppWordsFound.count)
+        oppScoreLabel.text = String(format: "%04d", oppScore)
+        animateResults()
+    }
+    
+    private func animateResults() {
+        if youScore > oppScore {
+            resultsLabel.text = "YOU WON!"
+            resultsLabel.textColor = .darkTheme
+            resultsLabel.backgroundColor = .orangeTheme
+        } else if youScore < oppScore {
+            resultsLabel.text = "YOU LOST!"
+            resultsLabel.textColor = .red
+            resultsLabel.backgroundColor = .black
+        } else {
+            resultsLabel.text = "DRAW!"
+            resultsLabel.textColor = .orangeTheme
+            resultsLabel.backgroundColor = .black
+        }
+        resultsLabel.font = UIFont(name: "Rubik-Bold", size: 18)
+        resultsLabel.layer.cornerRadius = 4
+        resultsLabel.layer.masksToBounds = true
+        resultsLabel.topInset = 7
+        resultsLabel.bottomInset = 7
+        resultsLabel.leftInset = 28
+        resultsLabel.rightInset = 28
+        
+        view.addSubview(resultsLabel)
+        resultsLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        resultsLabel.snp.makeConstraints { im in
+            im.centerX.equalToSuperview()
+            im.top.equalToSuperview().offset(50)
         }
     }
 }

@@ -38,6 +38,7 @@ class Board: UIViewController {
     static var timer: Timer?
     
     private var oppWordsFound: [String]?
+    private var oppUserId: String?
     private var gameId: String
     private var boardString: String
     private var delegate: MessagesViewControllerDelegate!
@@ -63,11 +64,12 @@ class Board: UIViewController {
         setupTop()
     }
     
-    init(gameId: String, board: String, delegate: MessagesViewControllerDelegate, oppWordsFound: [String]? = nil) {
+    init(gameId: String, board: String, delegate: MessagesViewControllerDelegate, oppWordsFound: [String]? = nil, oppUserId: String? = nil) {
         self.gameId = gameId
         self.oppWordsFound = oppWordsFound
         boardString = board
         self.delegate = delegate
+        self.oppUserId = oppUserId
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -167,7 +169,7 @@ class Board: UIViewController {
             self.timerLabel.text = formatter.string(from: self.timeRemaining)!
             if self.timeRemaining < 0 {
                 timer.invalidate()
-                self.delegate.endGame(gameId: self.gameId, wordsFound: Board.foundWords, oppWordsFound: self.oppWordsFound)
+                self.delegate.endGame(gameId: self.gameId, wordsFound: Board.foundWords, oppWordsFound: self.oppWordsFound, oppUserId: self.oppUserId)
             }
         }
         
