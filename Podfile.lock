@@ -1,0 +1,20 @@
+PODS:
+  - SnapKit (5.6.0)
+  - UICountingLabel (1.4.1)
+
+DEPENDENCIES:
+  - SnapKit
+  - UICountingLabel
+
+SPEC REPOS:
+  trunk:
+    - SnapKit
+    - UICountingLabel
+
+SPEC CHECKSUMS:
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  UICountingLabel: faf890b505d96312e324a86718f031fafffb0ccb
+
+PODFILE CHECKSUM: e098d21d2c2eb9b5d198939f9918ca06c2f960dd
+
+COCOAPODS: 1.14.2

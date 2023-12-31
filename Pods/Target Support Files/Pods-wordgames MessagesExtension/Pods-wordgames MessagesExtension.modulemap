@@ -1,0 +1,6 @@
+framework module Pods_wordgames_MessagesExtension {
+  umbrella header "Pods-wordgames MessagesExtension-umbrella.h"
+
+  export *
+  module * { export * }
+}
