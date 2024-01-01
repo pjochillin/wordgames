@@ -41,7 +41,17 @@ class MessagesViewController: MSMessagesAppViewController {
         // and store enough state information to restore your extension to its current state
         // in case it is terminated later.
         
+        if board != nil && boardId != nil && Board.timer!.isValid {
+            UserDefaults.standard.setValue(Board.foundWords.joined(separator: "-"), forKey: boardId!)
+        }
+        
         Board.clear()
+        
+        for child in children {
+            child.willMove(toParent: nil)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
+        }
     }
    
     override func didReceive(_ message: MSMessage, conversation: MSConversation) {
@@ -117,9 +127,20 @@ class MessagesViewController: MSMessagesAppViewController {
         
         // Update game end screen if necessary.
         if children.count > 0 && endGame != nil && children.contains(endGame!) && endGame!.gameId == query["gameId"] {
+            if query["initUserId"]! == currentUser {
+                endGame!.updateOpp(oppWordsFound: query["otherUserWords"]!.components(separatedBy: "-"))
+            } else {
+                endGame!.updateOpp(oppWordsFound: query["initUserWords"]!.components(separatedBy: "-"))
+            }
             
-        }
         // Update board variables if necessary
+        } else if children.count > 0 && board != nil && boardId != nil && children.contains(board!) && board!.gameId == query["gameId"] {
+            if query["initUserId"]! == currentUser {
+                board!.updateOpp(oppUserId: query["otherUserId"]!, oppWordsFound: query["otherUserWords"]!.components(separatedBy: "-"))
+            } else {
+                board!.updateOpp(oppUserId: query["initUserId"]!, oppWordsFound: query["initUserWords"]!.components(separatedBy: "-"))
+            }
+        }
     }
     
     override func didStartSending(_ message: MSMessage, conversation: MSConversation) {
@@ -153,19 +174,43 @@ class MessagesViewController: MSMessagesAppViewController {
         var controller: UIViewController
         if self.activeConversation?.selectedMessage?.url?.query() != nil && presentationStyle == .expanded {
             let query = parseQuery(self.activeConversation!.selectedMessage!.url!.query()!)
-            if board == nil && boardId == nil {
-                board = Board(gameId: query["gameId"]!, board: query["board"]!, delegate: self)
-                boardId = query["gameId"]!
+            
+            // Ensure message is from this application.
+            if query["gameId"] == nil || query["initUserId"] == nil || query["board"] == nil {
+                controller = SendBoard(delegate: self)
+            } else {
+                if endGame != nil && query["gameId"] == endGame!.gameId {
+                    controller = endGame!
+                } else if board == nil && boardId == nil {
+                    if UserDefaults.standard.string(forKey: query["gameId"]!) != nil {
+                        var oppWordsFound: [String]?
+                        if query["initUserId"] == activeConversation!.localParticipantIdentifier.uuidString {
+                            oppWordsFound = query["otherUserWords"]?.components(separatedBy: "-")
+                        } else {
+                            oppWordsFound = query["initUserWords"]?.components(separatedBy: "-")
+                        }
+                        let wordsFound = UserDefaults.standard.string(forKey: query["gameId"]!)!.components(separatedBy: "-")
+                        UserDefaults.standard.removeObject(forKey: query["gameId"]!)
+                        endGame = EndGame(gameId: query["gameId"]!, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+                        controller = endGame!
+                        sendUpdateMessage(query: query, gameId: query["gameId"]!, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+                    } else {
+                        board = Board(gameId: query["gameId"]!, board: query["board"]!, delegate: self)
+                        boardId = query["gameId"]!
+                        controller = board!
+                    }
+                } else {
+                    controller = board!
+                }
             }
-            controller = board!
         } else {
             controller = SendBoard(delegate: self)
         }
         
         // Test code just for viewing EndGame VC
-        if presentationStyle == .expanded {
-            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"])
-        }
+//        if presentationStyle == .expanded {
+//            controller = EndGame(gameId: "test", wordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"], oppWordsFound: ["test", "hahaha", "strollers", "stroller", "dummy", "solution", "against", "tanning", "lifestyle", "watch", "air", "cot", "cod"])
+//        }
         
         controller.willMove(toParent: self)
         addChild(controller)
@@ -188,41 +233,8 @@ class MessagesViewController: MSMessagesAppViewController {
         }
         return dict
     }
-}
-
-protocol MessagesViewControllerDelegate {
-    func sendBoard()
-    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?)
-}
-
-extension MessagesViewController: MessagesViewControllerDelegate {
-    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?) {
-        let newController = EndGame(gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
-        newController.view.transform = CGAffineTransform(translationX: view.frame.width, y: 0)
-        newController.willMove(toParent: self)
-        addChild(newController)
-        newController.view.frame = view.bounds
-        newController.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(newController.view)
-                
-        newController.view.snp.makeConstraints { im in
-            im.top.bottom.leading.trailing.equalToSuperview()
-        }
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveLinear) {
-            newController.view.transform = .identity
-        }
-        newController.didMove(toParent: self)
-        
-        for child in children {
-            if child != newController {
-                child.willMove(toParent: nil)
-                child.view.removeFromSuperview()
-                child.removeFromParent()
-            }
-        }
-        
-        let query = parseQuery(self.activeConversation!.selectedMessage!.url!.query()!)
+    
+    func sendUpdateMessage(query: [String: String], gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String? = nil) {
         let message = MSMessage(session: self.activeConversation!.selectedMessage!.session!)
         let components = NSURLComponents()
         
@@ -277,6 +289,43 @@ extension MessagesViewController: MessagesViewControllerDelegate {
         message.layout = layout
         
         self.activeConversation!.send(message)
+    }
+}
+
+protocol MessagesViewControllerDelegate {
+    func sendBoard()
+    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?)
+}
+
+extension MessagesViewController: MessagesViewControllerDelegate {
+    func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?) {
+        let newController = EndGame(gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+        newController.view.transform = CGAffineTransform(translationX: view.frame.width, y: 0)
+        newController.willMove(toParent: self)
+        addChild(newController)
+        newController.view.frame = view.bounds
+        newController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(newController.view)
+                
+        newController.view.snp.makeConstraints { im in
+            im.top.bottom.leading.trailing.equalToSuperview()
+        }
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveLinear) {
+            newController.view.transform = .identity
+        }
+        newController.didMove(toParent: self)
+        
+        for child in children {
+            if child != newController {
+                child.willMove(toParent: nil)
+                child.view.removeFromSuperview()
+                child.removeFromParent()
+            }
+        }
+        
+        let query = parseQuery(self.activeConversation!.selectedMessage!.url!.query()!)
+        sendUpdateMessage(query: query, gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
     }
     
     func sendBoard() {

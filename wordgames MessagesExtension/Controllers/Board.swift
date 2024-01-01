@@ -39,7 +39,7 @@ class Board: UIViewController {
     
     private var oppWordsFound: [String]?
     private var oppUserId: String?
-    private var gameId: String
+    var gameId: String
     private var boardString: String
     private var delegate: MessagesViewControllerDelegate!
     
@@ -87,6 +87,11 @@ class Board: UIViewController {
         score = 0
         wordCount = 0
         scoreLabel.text = "0000"
+    }
+    
+    func updateOpp(oppUserId: String, oppWordsFound: [String]) {
+        self.oppUserId = oppUserId
+        self.oppWordsFound = oppWordsFound
     }
     
     func setupTop() {
