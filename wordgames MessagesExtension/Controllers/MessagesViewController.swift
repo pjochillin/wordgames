@@ -194,6 +194,18 @@ class MessagesViewController: MSMessagesAppViewController {
                         endGame = EndGame(gameId: query["gameId"]!, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
                         controller = endGame!
                         sendUpdateMessage(query: query, gameId: query["gameId"]!, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+                    } else if (query["initUserId"]! == activeConversation!.localParticipantIdentifier.uuidString && query["initUserWords"] != nil) || (query["otherUserId"] == activeConversation!.localParticipantIdentifier.uuidString) {
+                        var wordsFound: [String]
+                        var oppWordsFound: [String]?
+                        if query["initUserId"]! == activeConversation!.localParticipantIdentifier.uuidString {
+                            wordsFound = query["initUserWords"]!.components(separatedBy: "-")
+                            oppWordsFound = query["otherUserWords"]?.components(separatedBy: "-")
+                        } else {
+                            wordsFound = query["otherUserWords"]!.components(separatedBy: "-")
+                            oppWordsFound = query["initUserWords"]?.components(separatedBy: "-")
+                        }
+                        endGame = EndGame(gameId: query["gameId"]!, wordsFound: wordsFound, oppWordsFound: oppWordsFound, cameFromGame: false)
+                        controller = endGame!
                     } else {
                         board = Board(gameId: query["gameId"]!, board: query["board"]!, delegate: self)
                         boardId = query["gameId"]!
@@ -299,7 +311,8 @@ protocol MessagesViewControllerDelegate {
 
 extension MessagesViewController: MessagesViewControllerDelegate {
     func endGame(gameId: String, wordsFound: [String], oppWordsFound: [String]?, oppUserId: String?) {
-        let newController = EndGame(gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+        endGame = EndGame(gameId: gameId, wordsFound: wordsFound, oppWordsFound: oppWordsFound)
+        let newController = endGame!
         newController.view.transform = CGAffineTransform(translationX: view.frame.width, y: 0)
         newController.willMove(toParent: self)
         addChild(newController)

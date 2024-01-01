@@ -30,11 +30,12 @@ class EndGame: UIViewController {
     private let resultsLabel = WordText()
     
     let gameId: String
-    let youWordsFound: [String]
-    var youScore = 0
-    var oppWordsFound: [String]
-    var oppScore = 0
-    var hasOppInfo: Bool
+    private let youWordsFound: [String]
+    private var youScore = 0
+    private var oppWordsFound: [String]
+    private var oppScore = 0
+    private var hasOppInfo: Bool
+    private var cameFromGame: Bool
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,7 +53,7 @@ class EndGame: UIViewController {
         }
     }
     
-    init(gameId: String, wordsFound: [String], oppWordsFound: [String]? = nil) {
+    init(gameId: String, wordsFound: [String], oppWordsFound: [String]? = nil, cameFromGame: Bool = true) {
         self.gameId = gameId
         
         self.hasOppInfo = oppWordsFound != nil
@@ -68,6 +69,8 @@ class EndGame: UIViewController {
         } else {
             self.oppWordsFound = []
         }
+        
+        self.cameFromGame = cameFromGame
         
         super.init(nibName: nil, bundle: nil)
         
@@ -300,49 +303,75 @@ class EndGame: UIViewController {
         waitingLabel.textColor = .whiteTheme
         waitingLabel.font = UIFont(name: "Rubik", size: 18)
         waitingLabel.backgroundColor = .darkTheme
+        waitingLabel.layer.cornerRadius = 4
+        waitingLabel.layer.masksToBounds = true
         
         view.addSubview(waitingLabel)
         waitingLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        waitingLabel.snp.makeConstraints { im in
-            im.centerX.equalToSuperview()
-            im.bottom.equalTo(view.snp.top)
-        }
+        if cameFromGame {
+            waitingLabel.snp.makeConstraints { im in
+                im.centerX.equalToSuperview()
+                im.bottom.equalTo(view.snp.top)
+            }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-            if !self.waitingBackground.isHidden {
-                UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-                    self.waitingBackground.backgroundColor = .darkTheme.withAlphaComponent(0.5)
-                }
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if !self.waitingBackground.isHidden {
-                UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut) {
-                    self.waitingLabel.snp.remakeConstraints { im in
-                        im.bottom.equalToSuperview().inset(50)
-                        im.centerX.equalToSuperview()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                if !self.waitingBackground.isHidden {
+                    UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
+                        self.waitingBackground.backgroundColor = .darkTheme.withAlphaComponent(0.5)
                     }
-                    self.view.layoutIfNeeded()
                 }
             }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            if !self.waitingBackground.isHidden {
-                UIView.animate(withDuration: 0.2, delay: 0, options: .transitionCrossDissolve) {
-                    self.waitingLabel.text = "Waiting for opponent"
-                    self.view.layoutIfNeeded()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                if !self.waitingBackground.isHidden {
+                    UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut) {
+                        self.waitingLabel.snp.remakeConstraints { im in
+                            im.bottom.equalToSuperview().inset(50)
+                            im.centerX.equalToSuperview()
+                        }
+                        self.view.layoutIfNeeded()
+                    }
                 }
-                Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { timer in
-                    if self.waitingLabel.text!.filter({ $0 == "." }).count == 3 {
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                if !self.waitingBackground.isHidden {
+                    UIView.animate(withDuration: 0.2, delay: 0, options: .transitionCrossDissolve) {
                         self.waitingLabel.text = "Waiting for opponent"
-                    } else {
-                        self.waitingLabel.text! += "."
+                        self.view.layoutIfNeeded()
                     }
-                    
-                    if self.waitingBackground.isHidden {
-                        timer.invalidate()
+                    Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { timer in
+                        if self.waitingLabel.text!.filter({ $0 == "." }).count == 3 {
+                            self.waitingLabel.text = "Waiting for opponent"
+                        } else {
+                            self.waitingLabel.text! += "."
+                        }
+                        
+                        if self.waitingBackground.isHidden {
+                            timer.invalidate()
+                        }
                     }
+                }
+            }
+        } else {
+            self.waitingLabel.snp.makeConstraints { im in
+                im.bottom.equalToSuperview().inset(50)
+                im.centerX.equalToSuperview()
+            }
+            waitingBackground.backgroundColor = .darkTheme.withAlphaComponent(0.5)
+            UIView.animate(withDuration: 0.2, delay: 0, options: .transitionCrossDissolve) {
+                self.waitingLabel.text = "Waiting for opponent"
+                self.view.layoutIfNeeded()
+            }
+            Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { timer in
+                if self.waitingLabel.text!.filter({ $0 == "." }).count == 3 {
+                    self.waitingLabel.text = "Waiting for opponent"
+                } else {
+                    self.waitingLabel.text! += "."
+                }
+                
+                if self.waitingBackground.isHidden {
+                    timer.invalidate()
                 }
             }
         }
